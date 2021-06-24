@@ -16,6 +16,12 @@ jobs:
             for version in $(cat .versions); do
                 docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:debian-${version} debian
             done
+      - run:
+          name : build-development-image
+          command: |
+            for version in $(cat .versions); do
+                docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:development-${version} development
+            done
   buildAndDeploy:
     machine: true
     steps:
@@ -44,6 +50,18 @@ jobs:
                 docker tag quay.io/wealthwizards/ww-base-node:debian-${version} quay.io/wealthwizards/ww-base-node:debian-${major_version}
                 docker tag quay.io/wealthwizards/ww-base-node:debian-${version} quay.io/wealthwizards/ww-base-node:debian-latest
             done
+      - run:
+          name : build-development-image
+          command: |
+            for version in $(cat .versions); do
+                a=( ${version//./ } )
+                major_version=${a[0]}
+                minor_version=${a[1]}
+                docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:development-${version} development
+                docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-${major_version}.${minor_version}
+                docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-${major_version}
+                docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-latest
+            done
       - deploy:
           name : docker-login
           command: |
@@ -69,6 +87,17 @@ jobs:
                 docker push quay.io/wealthwizards/ww-base-node:debian-${major_version}.${minor_version}
                 docker push quay.io/wealthwizards/ww-base-node:debian-${major_version}
                 docker push quay.io/wealthwizards/ww-base-node:debian-latest
+            done
+      - deploy:
+          name : push-development-image
+          command: |
+            for version in $(cat .versions); do
+                a=( ${version//./ } )
+                major_version=${a[0]}
+                minor_version=${a[1]}
+                docker push quay.io/wealthwizards/ww-base-node:development-${major_version}.${minor_version}
+                docker push quay.io/wealthwizards/ww-base-node:development-${major_version}
+                docker push quay.io/wealthwizards/ww-base-node:development-latest
             done
 workflows:
   version: 2
