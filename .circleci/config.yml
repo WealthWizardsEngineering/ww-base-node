@@ -22,6 +22,14 @@ jobs:
             for version in $(cat .versions); do
                 docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:development-${version} development
             done
+      - run:
+          name : build-lambda-image
+          command: |
+            for version in $(cat .versions); do
+                a=( ${version//./ } )
+                major_version=${a[0]}
+                docker build --build-arg node_version=${major_version} -t quay.io/wealthwizards/ww-base-node:lambda-${major_version} lambda
+            done
   buildAndDeploy:
     machine: true
     steps:
@@ -62,6 +70,16 @@ jobs:
                 docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-${major_version}
                 docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-latest
             done
+      - run:
+          name : build-lambda-image
+          command: |
+            for version in $(cat .versions); do
+                a=( ${version//./ } )
+                major_version=${a[0]}
+                docker build --build-arg node_version=${major_version} -t quay.io/wealthwizards/ww-base-node:lambda-${major_version} lambda
+                docker tag quay.io/wealthwizards/ww-base-node:lambda-${version} quay.io/wealthwizards/ww-base-node:lambda-${major_version}
+                docker tag quay.io/wealthwizards/ww-base-node:lambda-${version} quay.io/wealthwizards/ww-base-node:lambda-latest
+            done
       - deploy:
           name : docker-login
           command: |
@@ -98,6 +116,15 @@ jobs:
                 docker push quay.io/wealthwizards/ww-base-node:development-${major_version}.${minor_version}
                 docker push quay.io/wealthwizards/ww-base-node:development-${major_version}
                 docker push quay.io/wealthwizards/ww-base-node:development-latest
+            done
+      - deploy:
+          name : push-lambda-image
+          command: |
+            for version in $(cat .versions); do
+                a=( ${version//./ } )
+                major_version=${a[0]}
+                docker push quay.io/wealthwizards/ww-base-node:lambda-${major_version}
+                docker push quay.io/wealthwizards/ww-base-node:lambda-latest
             done
 workflows:
   version: 2
