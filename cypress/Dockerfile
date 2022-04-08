@@ -1,5 +1,18 @@
 ARG cypress_version
 FROM cypress/browsers:${cypress_version}
-RUN apk add --no-cache aws-cli curl git libc6-compat vault libcap
-# https://github.com/hashicorp/vault/issues/10048#issuecomment-706315167
-RUN setcap cap_ipc_lock= /usr/sbin/vault
+
+# Needed to add the hashicorp repo
+RUN apt-get update && \
+    apt-get install -y \
+    lsb-base \
+    lsb-release \
+    gnupg2 \
+    software-properties-common
+
+# Needed to get vault from hashicorp
+RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
+    apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+
+RUN apt-get update && \
+    apt-get install -y \
+    vault
