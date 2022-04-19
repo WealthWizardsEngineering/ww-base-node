@@ -22,6 +22,12 @@ jobs:
             for version in $(cat .versions); do
                 docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:development-${version} development
             done
+      - run:
+          name : build-cypress-image
+          command: |
+            for version in $(cat .versions-cypress); do
+                docker build --build-arg cypress_version=${version} -t quay.io/wealthwizards/ww-base-node:cypress-${version} cypress
+            done
   buildAndDeploy:
     machine: true
     steps:
@@ -62,6 +68,14 @@ jobs:
                 docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-${major_version}
                 docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-latest
             done
+      - run:
+          name : build-cypress-image
+          command: |
+            for version in $(cat .versions-cypress); do
+                docker build --build-arg cypress_version=${version} -t quay.io/wealthwizards/ww-base-node:cypress-${version} cypress
+                docker tag quay.io/wealthwizards/ww-base-node:cypress-${version} quay.io/wealthwizards/ww-base-node:cypress-${version}
+                docker tag quay.io/wealthwizards/ww-base-node:cypress-${version} quay.io/wealthwizards/ww-base-node:cypress-latest
+            done
       - deploy:
           name : docker-login
           command: |
@@ -98,6 +112,13 @@ jobs:
                 docker push quay.io/wealthwizards/ww-base-node:development-${major_version}.${minor_version}
                 docker push quay.io/wealthwizards/ww-base-node:development-${major_version}
                 docker push quay.io/wealthwizards/ww-base-node:development-latest
+            done
+      - deploy:
+          name : push-cypress-image
+          command: |
+            for version in $(cat .versions-cypress); do
+                docker push quay.io/wealthwizards/ww-base-node:cypress-${version}
+                docker push quay.io/wealthwizards/ww-base-node:cypress-latest
             done
 workflows:
   version: 2
