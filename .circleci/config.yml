@@ -5,22 +5,32 @@ jobs:
     steps:
       - checkout
       - run:
+          name : docker-buildx
+          command: |
+            docker buildx create --name multiarch --use --bootstrap
+      - run:
           name : build-alpine-image
           command: |
             for version in $(cat .versions); do
-                docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:alpine-${version} alpine
+                docker buildx build --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
+                --tag quay.io/wealthwizards/ww-base-node:alpine-${version} \
+                alpine
             done
       - run:
           name : build-debian-image
           command: |
             for version in $(cat .versions); do
-                docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:debian-${version} debian
+                docker buildx build --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
+                --tag quay.io/wealthwizards/ww-base-node:debian-${version} \
+                debian
             done
       - run:
           name : build-development-image
           command: |
             for version in $(cat .versions); do
-                docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:development-${version} development
+                docker buildx build --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
+                --tag quay.io/wealthwizards/ww-base-node:development-${version} \
+                development
             done
       - run:
           name : build-cypress-image
@@ -32,91 +42,60 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run:
-          name : build-alpine-image
+      - deploy:
+          name : docker-buildx-login
+          command: |
+            docker buildx create --name multiarch --use --bootstrap
+            docker login -u $DOCKER_USER -p $DOCKER_PASS quay.io
+      - deploy:
+          name : build-push-alpine-image
           command: |
             for version in $(cat .versions); do
                 a=( ${version//./ } )
                 major_version=${a[0]}
                 minor_version=${a[1]}
-                docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:alpine-${version} alpine
-                docker tag quay.io/wealthwizards/ww-base-node:alpine-${version} quay.io/wealthwizards/ww-base-node:alpine-${major_version}.${minor_version}
-                docker tag quay.io/wealthwizards/ww-base-node:alpine-${version} quay.io/wealthwizards/ww-base-node:alpine-${major_version}
-                docker tag quay.io/wealthwizards/ww-base-node:alpine-${version} quay.io/wealthwizards/ww-base-node:alpine-latest
+                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
+                --tag quay.io/wealthwizards/ww-base-node:alpine-${version} \ 
+                --tag quay.io/wealthwizards/ww-base-node:alpine-${major_version}.${minor_version} \
+                --tag quay.io/wealthwizards/ww-base-node:alpine-${major_version} \
+                --tag quay.io/wealthwizards/ww-base-node:alpine-latest \
+                alpine
             done
-      - run:
-          name : build-debian-image
+      - deploy:
+          name : build-push-debian-image
           command: |
             for version in $(cat .versions); do
                 a=( ${version//./ } )
                 major_version=${a[0]}
                 minor_version=${a[1]}
-                docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:debian-${version} debian
-                docker tag quay.io/wealthwizards/ww-base-node:debian-${version} quay.io/wealthwizards/ww-base-node:debian-${major_version}.${minor_version}
-                docker tag quay.io/wealthwizards/ww-base-node:debian-${version} quay.io/wealthwizards/ww-base-node:debian-${major_version}
-                docker tag quay.io/wealthwizards/ww-base-node:debian-${version} quay.io/wealthwizards/ww-base-node:debian-latest
+                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
+                --tag quay.io/wealthwizards/ww-base-node:debian-${version} \
+                --tag quay.io/wealthwizards/ww-base-node:debian-${major_version}.${minor_version} \
+                --tag quay.io/wealthwizards/ww-base-node:debian-${major_version} \
+                --tag quay.io/wealthwizards/ww-base-node:debian-latest \
+                debian
             done
-      - run:
-          name : build-development-image
+      - deploy:
+          name : build-push-development-image
           command: |
             for version in $(cat .versions); do
                 a=( ${version//./ } )
                 major_version=${a[0]}
                 minor_version=${a[1]}
-                docker build --build-arg node_version=${version} -t quay.io/wealthwizards/ww-base-node:development-${version} development
-                docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-${major_version}.${minor_version}
-                docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-${major_version}
-                docker tag quay.io/wealthwizards/ww-base-node:development-${version} quay.io/wealthwizards/ww-base-node:development-latest
+                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
+                --tag quay.io/wealthwizards/ww-base-node:development-${version} \
+                --tag quay.io/wealthwizards/ww-base-node:development-${major_version}.${minor_version} \
+                --tag quay.io/wealthwizards/ww-base-node:development-${major_version} \
+                --tag quay.io/wealthwizards/ww-base-node:development-latest \
+                development
             done
-      - run:
-          name : build-cypress-image
+      - deploy:
+          name : build-push-cypress-image
           command: |
             for version in $(cat .versions-cypress); do
                 docker build --build-arg cypress_version=${version} -t quay.io/wealthwizards/ww-base-node:cypress-${version} cypress
                 docker tag quay.io/wealthwizards/ww-base-node:cypress-${version} quay.io/wealthwizards/ww-base-node:cypress-${version}
                 docker tag quay.io/wealthwizards/ww-base-node:cypress-${version} quay.io/wealthwizards/ww-base-node:cypress-latest
-            done
-      - deploy:
-          name : docker-login
-          command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS quay.io
-      - deploy:
-          name : push-alpine-image
-          command: |
-            for version in $(cat .versions); do
-                a=( ${version//./ } )
-                major_version=${a[0]}
-                minor_version=${a[1]}
-                docker push quay.io/wealthwizards/ww-base-node:alpine-${major_version}.${minor_version}
-                docker push quay.io/wealthwizards/ww-base-node:alpine-${major_version}
-                docker push quay.io/wealthwizards/ww-base-node:alpine-latest
-            done
-      - deploy:
-          name : push-debian-image
-          command: |
-            for version in $(cat .versions); do
-                a=( ${version//./ } )
-                major_version=${a[0]}
-                minor_version=${a[1]}
-                docker push quay.io/wealthwizards/ww-base-node:debian-${major_version}.${minor_version}
-                docker push quay.io/wealthwizards/ww-base-node:debian-${major_version}
-                docker push quay.io/wealthwizards/ww-base-node:debian-latest
-            done
-      - deploy:
-          name : push-development-image
-          command: |
-            for version in $(cat .versions); do
-                a=( ${version//./ } )
-                major_version=${a[0]}
-                minor_version=${a[1]}
-                docker push quay.io/wealthwizards/ww-base-node:development-${major_version}.${minor_version}
-                docker push quay.io/wealthwizards/ww-base-node:development-${major_version}
-                docker push quay.io/wealthwizards/ww-base-node:development-latest
-            done
-      - deploy:
-          name : push-cypress-image
-          command: |
-            for version in $(cat .versions-cypress); do
                 docker push quay.io/wealthwizards/ww-base-node:cypress-${version}
                 docker push quay.io/wealthwizards/ww-base-node:cypress-latest
             done
