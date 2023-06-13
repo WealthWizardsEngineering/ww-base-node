@@ -17,3 +17,6 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
 RUN apt-get update && \
     apt-get install -y \
     vault
+
+ENV PLAYWRIGHT_BROWSERS_PATH=/.browsers
+RUN npx playwright install-deps webkit
