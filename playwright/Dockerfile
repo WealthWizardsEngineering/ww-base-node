@@ -1,5 +1,5 @@
-ARG cypress_version
-FROM cypress/browsers:${cypress_version}
+ARG playwright_version
+FROM mcr.microsoft.com/playwright:${playwright_version}
 
 # Needed to add the hashicorp repo
 RUN apt-get update && \

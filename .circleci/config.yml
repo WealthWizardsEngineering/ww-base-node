@@ -38,6 +38,12 @@ jobs:
             for version in $(cat .versions-cypress); do
                 docker build --build-arg cypress_version=${version} -t quay.io/wealthwizards/ww-base-node:cypress-${version} cypress
             done
+      - run:
+          name : build-playwright-image
+          command: |
+            for version in $(cat .versions-playwright); do
+                docker build --build-arg playwright_version=${version} -t quay.io/wealthwizards/ww-base-node:playwright-${version} playwright
+            done
   buildAndDeploy:
     machine: true
     steps:
@@ -83,6 +89,16 @@ jobs:
                 docker tag quay.io/wealthwizards/ww-base-node:cypress-${version} quay.io/wealthwizards/ww-base-node:cypress-latest
                 docker push quay.io/wealthwizards/ww-base-node:cypress-${version}
                 docker push quay.io/wealthwizards/ww-base-node:cypress-latest
+            done
+      - deploy:
+          name : build-push-playwright-image
+          command: |
+            for version in $(cat .versions-playwright); do
+                docker build --build-arg playwright_version=${version} -t quay.io/wealthwizards/ww-base-node:playwright-${version} playwright
+                docker tag quay.io/wealthwizards/ww-base-node:playwright-${version} quay.io/wealthwizards/ww-base-node:playwright-${version}
+                docker tag quay.io/wealthwizards/ww-base-node:playwright-${version} quay.io/wealthwizards/ww-base-node:playwright-latest
+                docker push quay.io/wealthwizards/ww-base-node:playwright-${version}
+                docker push quay.io/wealthwizards/ww-base-node:playwright-latest
             done
 workflows:
   version: 2
