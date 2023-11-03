@@ -33,12 +33,12 @@ jobs:
                 alpine-dev
             done
       - run:
-          name : build-development-debian-image
+          name : build-debian-dev-image
           command: |
             for version in $(cat .versions); do
                 docker buildx build --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
-                --tag quay.io/wealthwizards/ww-base-node:development-debian-${version} \
-                development-debian
+                --tag quay.io/wealthwizards/ww-base-node:debian-dev-${version} \
+                debian-dev
             done
       - run:
           name : build-cypress-image
@@ -89,13 +89,13 @@ jobs:
                 docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${major_version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-latest alpine-dev
             done
       - deploy:
-          name : build-push-development-debian-image
+          name : build-push-debian-dev-image
           command: |
             for version in $(cat .versions); do
                 a=( ${version//./ } )
                 major_version=${a[0]}
                 minor_version=${a[1]}
-                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:development-debian-${version} --tag quay.io/wealthwizards/ww-base-node:development-debian-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:development-debian-${major_version} --tag quay.io/wealthwizards/ww-base-node:development-debian-latest development-debian
+                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:debian-dev-${version} --tag quay.io/wealthwizards/ww-base-node:debian-dev-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:debian-dev-${major_version} --tag quay.io/wealthwizards/ww-base-node:debian-dev-latest debian-dev
             done
       - deploy:
           name : build-push-cypress-image
