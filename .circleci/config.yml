@@ -25,12 +25,12 @@ jobs:
                 debian
             done
       - run:
-          name : build-development-alpine-image
+          name : build-alpine-dev-image
           command: |
             for version in $(cat .versions); do
                 docker buildx build --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
-                --tag quay.io/wealthwizards/ww-base-node:development-alpine-${version} \
-                development-alpine
+                --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${version} \
+                alpine-dev
             done
       - run:
           name : build-development-debian-image
@@ -80,13 +80,13 @@ jobs:
                 docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:debian-${version} --tag quay.io/wealthwizards/ww-base-node:debian-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:debian-${major_version} --tag quay.io/wealthwizards/ww-base-node:debian-latest debian
             done
       - deploy:
-          name : build-push-development-alpine-image
+          name : build-push-alpine-dev-image
           command: |
             for version in $(cat .versions); do
                 a=( ${version//./ } )
                 major_version=${a[0]}
                 minor_version=${a[1]}
-                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:development-alpine-${version} --tag quay.io/wealthwizards/ww-base-node:development-alpine-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:development-alpine-${major_version} --tag quay.io/wealthwizards/ww-base-node:development-alpine-latest development-alpine
+                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${major_version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-latest alpine-dev
             done
       - deploy:
           name : build-push-development-debian-image
