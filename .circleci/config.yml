@@ -33,6 +33,14 @@ jobs:
                 development
             done
       - run:
+          name : build-development-debian-image
+          command: |
+            for version in $(cat .versions); do
+                docker buildx build --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
+                --tag quay.io/wealthwizards/ww-base-node:development-debian-${version} \
+                development-debian
+            done
+      - run:
           name : build-cypress-image
           command: |
             for version in $(cat .versions-cypress); do
@@ -79,6 +87,15 @@ jobs:
                 major_version=${a[0]}
                 minor_version=${a[1]}
                 docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:development-${version} --tag quay.io/wealthwizards/ww-base-node:development-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:development-${major_version} --tag quay.io/wealthwizards/ww-base-node:development-latest development
+            done
+      - deploy:
+          name : build-push-development-debian-image
+          command: |
+            for version in $(cat .versions); do
+                a=( ${version//./ } )
+                major_version=${a[0]}
+                minor_version=${a[1]}
+                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:development-debian-${version} --tag quay.io/wealthwizards/ww-base-node:development-debian-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:development-debian-${major_version} --tag quay.io/wealthwizards/ww-base-node:development-debian-latest development-debian
             done
       - deploy:
           name : build-push-cypress-image
