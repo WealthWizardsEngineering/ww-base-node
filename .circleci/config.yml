@@ -38,7 +38,7 @@ jobs:
             for version in $(cat .versions); do
                 docker buildx build --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
                 --tag quay.io/wealthwizards/ww-base-node:development--debian-${version} \
-                development-debian-
+                development-debian
             done
       - run:
           name : build-cypress-image
