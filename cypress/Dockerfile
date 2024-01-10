@@ -1,5 +1,5 @@
 ARG cypress_version
-FROM cypress/browsers:${cypress_version}
+FROM cypress/${cypress_version}
 
 # Needed to add the hashicorp repo
 RUN apt-get update && \
@@ -17,3 +17,6 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
 RUN apt-get update && \
     apt-get install -y \
     vault
+
+# Build Add PlayWright WebKit browser
+RUN npx playwright install --with-deps webkit
