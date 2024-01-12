@@ -8,7 +8,8 @@ RUN apt-get update && \
     lsb-release \
     gnupg2 \
     software-properties-common \
-    git
+    git \
+    curl
 
 # Needed to get vault from hashicorp
 RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
