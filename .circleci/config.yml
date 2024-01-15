@@ -44,7 +44,8 @@ jobs:
           name : build-cypress-image
           command: |
             for version in $(cat .versions-cypress); do
-                docker build --build-arg cypress_version=${version} -t quay.io/wealthwizards/ww-base-node:cypress-${version} cypress
+                cleaned_version=$(echo "${version}" | tr ':' '-')
+                docker build --build-arg cypress_version=${version} -t quay.io/wealthwizards/ww-base-node:cypress-${cleaned_version} cypress
             done
       - run:
           name : build-playwright-image
@@ -101,10 +102,11 @@ jobs:
           name : build-push-cypress-image
           command: |
             for version in $(cat .versions-cypress); do
-                docker build --build-arg cypress_version=${version} -t quay.io/wealthwizards/ww-base-node:cypress-${version} cypress
-                docker tag quay.io/wealthwizards/ww-base-node:cypress-${version} quay.io/wealthwizards/ww-base-node:cypress-${version}
-                docker tag quay.io/wealthwizards/ww-base-node:cypress-${version} quay.io/wealthwizards/ww-base-node:cypress-latest
-                docker push quay.io/wealthwizards/ww-base-node:cypress-${version}
+                cleaned_version=$(echo "${version}" | tr ':' '-')
+                docker build --build-arg cypress_version=${version} -t quay.io/wealthwizards/ww-base-node:cypress-${cleaned_version} cypress
+                docker tag quay.io/wealthwizards/ww-base-node:cypress-${cleaned_version} quay.io/wealthwizards/ww-base-node:cypress-${cleaned_version}
+                docker tag quay.io/wealthwizards/ww-base-node:cypress-${cleaned_version} quay.io/wealthwizards/ww-base-node:cypress-latest
+                docker push quay.io/wealthwizards/ww-base-node:cypress-${cleaned_version}
                 docker push quay.io/wealthwizards/ww-base-node:cypress-latest
             done
       - run:
