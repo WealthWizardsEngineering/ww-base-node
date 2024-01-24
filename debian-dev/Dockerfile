@@ -14,4 +14,5 @@ RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/shar
   && pip3 install --break-system-packages awscli \
   && wget -O- https://get.pulumi.com/ | sh \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && yarn global add node-gyp
