@@ -25,14 +25,6 @@ jobs:
                 debian
             done
       - run:
-          name : build-alpine-dev-image
-          command: |
-            for version in $(cat .versions); do
-                docker buildx build --platform linux/arm64,linux/amd64 --build-arg node_version=${version} \
-                --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${version} \
-                alpine-dev
-            done
-      - run:
           name : build-debian-dev-image
           command: |
             for version in $(cat .versions); do
@@ -79,15 +71,6 @@ jobs:
                 major_version=${a[0]}
                 minor_version=${a[1]}
                 docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:debian-${version} --tag quay.io/wealthwizards/ww-base-node:debian-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:debian-${major_version} --tag quay.io/wealthwizards/ww-base-node:debian-latest debian
-            done
-      - run:
-          name : build-push-alpine-dev-image
-          command: |
-            for version in $(cat .versions); do
-                a=( ${version//./ } )
-                major_version=${a[0]}
-                minor_version=${a[1]}
-                docker buildx build --push --platform linux/arm64,linux/amd64 --build-arg node_version=${version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${major_version}.${minor_version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-${major_version} --tag quay.io/wealthwizards/ww-base-node:alpine-dev-latest alpine-dev
             done
       - run:
           name : build-push-debian-dev-image
