@@ -2,11 +2,11 @@
 
 Reference image to use for building ww node services. Dockerfiles should reference FROM this image.
 
-`FROM quay.io/wealthwizards/ww-base-node:alpine-8`
+`FROM quay.io/wealthwizards/ww-base-node:alpine-20`
 
 If alpine is not a suitable upstream image and a more complete image is required, please use the alternative:
 
-`FROM quay.io/wealthwizards/ww-base-node:debian-8`
+`FROM quay.io/wealthwizards/ww-base-node:debian-20`
 
 ## Available versions
 
@@ -19,15 +19,15 @@ more specific. This is so that images will be updated automatically.
 
 For example:
 
-Version defined in .versions file as '8.9.4' will produce the following tags:
+Version defined in .versions file as '20.12.2' will produce the following tags:
 
-* `quay.io/wealthwizards/ww-base-node:alpine-8`
-* `quay.io/wealthwizards/ww-base-node:alpine-8.9`
-* `quay.io/wealthwizards/ww-base-node:alpine-8.9.4`
+* `quay.io/wealthwizards/ww-base-node:alpine-20`
+* `quay.io/wealthwizards/ww-base-node:alpine-20.12`
+* `quay.io/wealthwizards/ww-base-node:alpine-20.12.2`
 
-* `quay.io/wealthwizards/ww-base-node:debian-8`
-* `quay.io/wealthwizards/ww-base-node:debian-8.9`
-* `quay.io/wealthwizards/ww-base-node:debian-8.9.4`
+* `quay.io/wealthwizards/ww-base-node:debian-20`
+* `quay.io/wealthwizards/ww-base-node:debian-20.12`
+* `quay.io/wealthwizards/ww-base-node:debian-20.12.2`
 
 The last version defined in the .versions file will be tagged as alpine-latest and debian-latest.
 
