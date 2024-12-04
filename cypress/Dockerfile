@@ -17,7 +17,9 @@ RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add - && \
 
 RUN apt-get update && \
     apt-get install -y \
-    vault
+    vault && \
+    setcap -r $(which vault) && \
+    vault -v
 
 # Build Add PlayWright WebKit browser
 RUN npx playwright install --with-deps webkit
