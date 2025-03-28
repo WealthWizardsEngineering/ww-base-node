@@ -23,3 +23,6 @@ RUN apt-get update && \
 
 # Build Add PlayWright WebKit browser
 RUN npx playwright install --with-deps webkit
+
+# https://github.com/hashicorp/vault/issues/10048#issuecomment-706315167
+RUN setcap cap_ipc_lock= /usr/bin/vault
