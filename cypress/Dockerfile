@@ -19,10 +19,11 @@ RUN apt-get update && \
     apt-get install -y \
     vault && \
     setcap -r $(which vault) && \
-    vault -v
+    vault -v \
+    libcap
 
 # Build Add PlayWright WebKit browser
 RUN npx playwright install --with-deps webkit
 
 # https://github.com/hashicorp/vault/issues/10048#issuecomment-706315167
-RUN setcap cap_ipc_lock= /usr/sbin/vault
+RUN setcap cap_ipc_lock= /usr/bin/vault
