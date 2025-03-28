@@ -19,8 +19,7 @@ RUN apt-get update && \
     apt-get install -y \
     vault && \
     setcap -r $(which vault) && \
-    vault -v && \
-    libcap
+    vault -v
 
 # Build Add PlayWright WebKit browser
 RUN npx playwright install --with-deps webkit
