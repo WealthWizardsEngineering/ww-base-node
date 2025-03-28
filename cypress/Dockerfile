@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get install -y \
     vault && \
     setcap -r $(which vault) && \
-    vault -v \
+    vault -v && \
     libcap
 
 # Build Add PlayWright WebKit browser
