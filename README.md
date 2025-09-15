@@ -1,7 +1,8 @@
 # DEPRECECATED
 
-This project has now been deprecated and any changes made to it will not trigger a build! 
-The project can now be found here: https://gitlab.com/wealthwizards/platform/docker-images/ww-base-node
+This project has now been deprecated and any changes made to it will not trigger a build!
+The debian and alpine images can now be pulled straight from Docker hub
+The other images can be found in this project in [Gitlab](https://gitlab.com/wealthwizards/platform/docker-images)
 
 ## ww-base-node
 
