@@ -1,4 +1,9 @@
-# ww-base-node
+# DEPRECECATED
+
+This project has now been deprecated and any changes made to it will not trigger a build! 
+The project can now be found here: https://gitlab.com/wealthwizards/platform/docker-images/ww-base-node
+
+## ww-base-node
 
 Reference image to use for building ww node services. Dockerfiles should reference FROM this image.
 
